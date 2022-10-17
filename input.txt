@@ -1,0 +1,50 @@
+.hardware trafiklys
+
+// Trafiklys eksempel.
+
+.inputs Button
+.outputs Red Yel Green PRed PGreen Safety Liveness
+
+.latch Red -> RedM
+
+.latch One -> OneM
+.latch Two -> TwoM
+
+.latch Yel -> YelM
+.latch Req -> ReqM
+
+.update
+
+Clr = RedM && !YelM
+Req = (ReqM || Button) && !Clr
+Red = !RedM && YelM || RedM && !YelM
+Yel = !RedM && !YelM && Req || RedM && !YelM
+Green  = !Red && !Yel
+PGreen = Red && !Yel
+PRed   = !PGreen
+Safety = Red && PGreen || Yel && !PGreen
+One = Yel
+Two = Red
+Liveness = Two && One || Two
+
+
+.simulate Button=001001111001
+
+/*
+
+Expected output of the simulator:
+
+001001111001 Button
+000110011000 Red
+001010101001 Yel
+110001000110 Green
+111011101111 PRed
+000100010000 PGreen
+
+One 001010101001
+Two 000110011000
+    001230123001
+
+
+
+*/
