@@ -7,7 +7,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-//
+
 public class main {
     public static void main(String[] args) throws IOException {
         // we expect exactly one argument: the name of the input file
@@ -41,7 +41,7 @@ public class main {
         AST ast = interpreter.visit(parseTree);
 
         //System.out.println(ast.eval(new Environment()));
-////
+
 
         //System.out.println(newSignal.eval(new Environment()));
 

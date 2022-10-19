@@ -69,7 +69,8 @@ class Start extends AST {
         for (int i = 0; i < simulations.get(0).boolList.length; i++) {
             cycle(i);
         }
-        System.out.println(env.toString());
+        env.printOutString(outputs,simulations);
+        System.out.println();
     }
 
     void cycle(int cycle) {
@@ -235,7 +236,6 @@ class Variable extends NewSignal {
         return null;
     }
 }
-// Azeliah#8433
 
 
 class LogicalOr extends NewSignal {
@@ -274,45 +274,5 @@ class LogicalAnd extends NewSignal {
     @Override
     NewSignal eval(Environment env) {
         return null;
-    }
-}
-
-class Output extends AST {
-    NewSignal e;
-
-    Output(NewSignal e) {
-        this.e = e;
-    }
-
-    @Override
-    NewSignal eval(Environment env) {
-        return new Variable("var");
-    }
-
-    @Override
-    Boolean eval(Environment env, int clock) {
-        return true;
-    }
-}
-
-class input extends AST {
-    public Boolean i;
-
-    void Constant(Boolean i) {
-        this.i = i;
-    }
-
-    public Boolean eval() {
-        return i;
-    }
-
-    @Override
-    NewSignal eval(Environment env) {
-        return new Variable("var");
-    }
-
-    @Override
-    Boolean eval(Environment env, int clock) {
-        return true;
     }
 }
