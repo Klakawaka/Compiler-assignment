@@ -9,7 +9,7 @@ public abstract class AST {
     abstract Boolean eval(Environment env, int clock);
 }
 
-abstract class NewSignal extends AST { // As Expr
+abstract class NewSignal extends AST {
 
     abstract Boolean eval(Environment env, int clock);
 
@@ -23,7 +23,6 @@ class Start extends AST {
     List<Latch> latches;
     List<Update> updates;
     List<Simulation> simulations;
-
     Environment env;
 
 
@@ -58,7 +57,12 @@ class Start extends AST {
         }
         init();
     }
+    void cycle(int cycle) {
+        executeLatches(cycle);
+        executeUpdates(cycle);
 
+
+    }
 
     void init() {
 
@@ -73,21 +77,18 @@ class Start extends AST {
         System.out.println();
     }
 
-    void cycle(int cycle) {
-        executeUpdates(cycle);
-        executeLatches(cycle);
-    }
-
     void executeUpdates(int cycle) {
-        for (int i = 0; i < updates.size(); i++) {
-            updates.get(i).eval(env, cycle);
+        for (Update update : updates) {
+            update.eval(env, cycle);
         }
     }
 
     void executeLatches(int cycle) {
-        for (int i = 0; i < latches.size(); i++) {
-            latches.get(i).nextCycle(env, cycle);
-        }
+            if (cycle < 0) {
+                for (Latch latch : latches) {
+                    latch.nextCycle(env, cycle);
+                }
+            }
     }
 
     @Override
@@ -132,7 +133,6 @@ class Latch extends AST {
     }
 
     public void nextCycle(Environment env, int clock) {
-
         //getting earlier assigned input value to current output
         if(clock > 0) {
             this.o.value = this.i.value;
@@ -141,12 +141,15 @@ class Latch extends AST {
             Boolean[] outputBool = env.getVariable(o.varname);
             outputBool[clock] = this.o.value;
             env.setVariable(this.o.varname, outputBool);
+            // Shows True and False for every clock
             //System.out.println(this.o.varname + " er " + Arrays.toString(outputBool));
         }
 
         //Changing the input variable for next use
         Boolean[] inputBool = env.getVariable(i.varname);
         this.i.value = inputBool[clock];
+
+
     }
 
     @Override
@@ -157,30 +160,6 @@ class Latch extends AST {
     @Override
     Boolean eval(Environment env, int clock) {
         return true;
-    }
-}
-
-class Update extends AST {
-    String variable;
-    NewSignal newSignal;
-
-    public Update(String variable, NewSignal newSignal) {
-        this.variable = variable;
-        this.newSignal = newSignal;
-    }
-
-    @Override
-    NewSignal eval(Environment env) {
-        return new Variable("var");
-    }
-    
-    @Override
-    Boolean eval(Environment env, int clock) {
-
-        Boolean[] var = env.getVariable(variable);
-        var[clock] = newSignal.eval(env, clock);
-        env.setVariable(variable, var);
-        return newSignal.eval(env, clock);
     }
 }
 
@@ -215,6 +194,29 @@ class Simulation extends AST {
         return boolList[clock];
     }
 }
+class Update extends AST {
+    String variable;
+    NewSignal newSignal;
+
+    public Update(String variable, NewSignal newSignal) {
+        this.variable = variable;
+        this.newSignal = newSignal;
+    }
+
+    @Override
+    NewSignal eval(Environment env) {
+        return new Variable("var");
+    }
+
+    @Override
+    Boolean eval(Environment env, int clock) {
+
+        Boolean[] var = env.getVariable(variable);
+        var[clock] = newSignal.eval(env, clock);
+        env.setVariable(variable, var);
+        return newSignal.eval(env, clock);
+    }
+}
 
 class Variable extends NewSignal {
     String varname;
@@ -224,19 +226,16 @@ class Variable extends NewSignal {
         this.varname = varname;
     }
 
-    public Boolean eval(Environment env, int clock) {
-        //System.out.println("varname in Variable: " + varname);
-        //System.out.println("getting variable value from Variable class T/F?: " + env.getVariable(varname)[clock]);
-        this.value = env.getVariable(varname)[clock];
-        return env.getVariable(varname)[clock];
-    }
-
     @Override
     NewSignal eval(Environment env) {
         return null;
     }
-}
 
+    public Boolean eval(Environment env, int clock) {
+        this.value = env.getVariable(varname)[clock];
+        return env.getVariable(varname)[clock];
+    }
+}
 
 class LogicalOr extends NewSignal {
     NewSignal new1, new2;
@@ -256,7 +255,6 @@ class LogicalOr extends NewSignal {
     }
 }
 
-
 class LogicalAnd extends NewSignal {
     NewSignal new1, new2;
 
@@ -267,7 +265,6 @@ class LogicalAnd extends NewSignal {
 
     @Override
     public Boolean eval(Environment env, int clock) {
-        //System.out.println("new1: " + new1.eval(env, clock) + " new2: " + new2.eval(env, clock));
         return new1.eval(env, clock) && new2.eval(env, clock);
     }
 

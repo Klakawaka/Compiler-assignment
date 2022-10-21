@@ -21,5 +21,8 @@ hardwaresimulatorLexer.class:	hardwaresimulatorLexer.java
 grun:	hardwaresimulatorLexer.class input.txt
 	$(grun) hardwaresimulator start -gui -tokens input.txt
 
+hellogrun:	hardwaresimulatorLexer.class helloInput.txt
+	$(grun) hardwaresimulator start -gui -tokens helloInput.txt
+
 test:	main.class
 	java main input.txt
