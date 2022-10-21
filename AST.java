@@ -74,7 +74,6 @@ class Start extends AST {
             cycle(i);
         }
         env.printOutString(outputs,simulations);
-        System.out.println();
     }
 
     void executeUpdates(int cycle) {
@@ -84,10 +83,8 @@ class Start extends AST {
     }
 
     void executeLatches(int cycle) {
-            if (cycle < 0) {
-                for (Latch latch : latches) {
-                    latch.nextCycle(env, cycle);
-                }
+            for (Latch latch : latches) {
+                latch.nextCycle(env, cycle);
             }
     }
 
@@ -142,9 +139,8 @@ class Latch extends AST {
             outputBool[clock] = this.o.value;
             env.setVariable(this.o.varname, outputBool);
             // Shows True and False for every clock
-            //System.out.println(this.o.varname + " er " + Arrays.toString(outputBool));
+            System.out.println(this.o.varname + " er " + Arrays.toString(outputBool));
         }
-
         //Changing the input variable for next use
         Boolean[] inputBool = env.getVariable(i.varname);
         this.i.value = inputBool[clock];
