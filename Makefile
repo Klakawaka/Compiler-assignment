@@ -5,7 +5,6 @@ GENERATED = hardwaresimulatorListener.java hardwaresimulatorBaseListener.java ha
 
 all:	
 	make test
-	
 main.class:	$(SRCFILES) $(GENERATED) hardwaresimulator.g4
 	javac -Xlint:unchecked $(SRCFILES) $(GENERATED)
 
