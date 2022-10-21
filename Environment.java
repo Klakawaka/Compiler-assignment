@@ -26,12 +26,12 @@ class Environment {
     }
 
     public String toString() {
-        String table = "";
+        StringBuilder table = new StringBuilder();
         for (Entry<String, Boolean[]> entry : variableValues.entrySet()) {
-            table += entry.getKey() + "\t-> " + Arrays.deepToString(entry.getValue()).replace("true", "1")
-                    .replace("false", "0") + "\n";
+            table.append(entry.getKey()).append("\t-> ").append(Arrays.deepToString(entry.getValue()).replace("true", "1")
+                    .replace("false", "0")).append("\n");
         }
-        return table;
+        return table.toString();
     }
 
 
